@@ -301,18 +301,25 @@ export const TemplateStudio = () => {
       if (!canvas) return;
 
       try {
-        // Remove any previous custom background image layer
-        const existingBg = canvas.getObjects().find(o => o.isBackgroundImageLayer);
-        if (existingBg) canvas.remove(existingBg);
+        // Remove any previous custom background image layers
+        const oldBgs = canvas.getObjects().filter(o => o.isBackgroundImageLayer);
+        oldBgs.forEach(o => canvas.remove(o));
 
         const img = await fabric.FabricImage.fromURL(dataUrl);
+
+        // Scale image exactly to fill the canvas bounds (800 x 565)
+        const scaleX = CANVAS_WIDTH / img.width;
+        const scaleY = CANVAS_HEIGHT / img.height;
+
         img.set({
           left: 0,
           top: 0,
           originX: 'left',
           originY: 'top',
-          selectable: false,       // Crucial: User cannot move it
-          evented: false,          // Crucial: Non-clickable
+          scaleX: scaleX,
+          scaleY: scaleY,
+          selectable: false,
+          evented: false,
           hasControls: false,
           hasBorders: false,
           lockMovementX: true,
@@ -320,13 +327,8 @@ export const TemplateStudio = () => {
           isBackgroundImageLayer: true,
         });
 
-        // Scale perfectly to fit canvas dimensions
-        img.scaleToWidth(CANVAS_WIDTH);
-        img.scaleToHeight(CANVAS_HEIGHT);
-
-        // Add to canvas and send to bottom layer
-        canvas.add(img);
-        canvas.sendObjectToBack(img);
+        // Set as official canvas background and also insert at bottom of object stack
+        canvas.backgroundImage = img;
         canvas.renderAll();
         saveState();
       } catch (err) {
