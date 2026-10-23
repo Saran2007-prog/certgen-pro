@@ -34,7 +34,17 @@ export const login = async (email, password) => {
     body: JSON.stringify({ email, password }),
   });
 
-  const data = await response.json();
+  let data;
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json();
+  } else {
+    const text = await response.text();
+    throw new Error(
+      `Backend returned an unexpected response (Status ${response.status}). Ensure VITE_API_URL points to the live backend /api route. Response: ${text.slice(0, 100)}...`
+    );
+  }
+
   if (!response.ok) {
     throw new Error(data.message || `Authentication failed with status ${response.status}`);
   }
@@ -64,7 +74,17 @@ export const register = async (userData) => {
     body: JSON.stringify(userData),
   });
 
-  const data = await response.json();
+  let data;
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('application/json')) {
+    data = await response.json();
+  } else {
+    const text = await response.text();
+    throw new Error(
+      `Backend returned an unexpected response (Status ${response.status}). Ensure VITE_API_URL points to the live backend /api route. Response: ${text.slice(0, 100)}...`
+    );
+  }
+
   if (!response.ok) {
     throw new Error(data.message || `Registration failed with status ${response.status}`);
   }

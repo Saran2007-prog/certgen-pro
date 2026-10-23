@@ -20,23 +20,42 @@ console.log('----------------------------------------------------');
 connectDB();
 
 // Global Middlewares & Production CORS Security
+const configuredClientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.trim().replace(/\/+$/, '') : null;
+
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  configuredClientUrl,
+  'https://certgen-pro.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
 ].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (such as mobile apps, curl, or Server-to-Server requests)
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
         return callback(null, true);
       }
+
+      const cleanOrigin = origin.trim().replace(/\/+$/, '');
+
+      // Check explicit allowed origins or any vercel.app preview deployments
+      const isAllowed = 
+        allowedOrigins.includes(cleanOrigin) ||
+        /\.vercel\.app$/.test(new URL(cleanOrigin).hostname);
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+
       console.warn(`[CORS Blocked]: Origin "${origin}" is not in allowed list:`, allowedOrigins);
       return callback(new Error(`CORS Error: Origin ${origin} not allowed.`));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 
