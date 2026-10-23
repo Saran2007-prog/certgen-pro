@@ -848,9 +848,10 @@ export const TemplateStudio = () => {
 
         {/* Right Canvas Column */}
         <div className="col-12 col-xl-9 col-lg-8 d-flex flex-column align-items-center">
-          <div className="card border-0 shadow-sm rounded-4 p-3.5 bg-white w-100 overflow-auto d-flex justify-content-center align-items-center">
+          <div className="card border-0 shadow-sm rounded-4 p-2 p-md-3.5 bg-white w-100 canvas-viewport-card">
             {/* Fabric HTML5 Canvas Container */}
             <div 
+              className="canvas-viewport-wrapper"
               style={{ 
                 width: CANVAS_WIDTH, 
                 height: CANVAS_HEIGHT, 
@@ -864,10 +865,11 @@ export const TemplateStudio = () => {
             </div>
           </div>
 
-          <div className="text-muted small mt-2.5 d-flex align-items-center gap-3">
+          <div className="text-muted small mt-2.5 d-flex flex-wrap justify-content-center align-items-center gap-2 gap-md-3 text-center">
             <span>Canvas Size: <strong>{CANVAS_WIDTH} × {CANVAS_HEIGHT} px</strong> (A4 Landscape)</span>
-            <span>•</span>
-            <span>Shortcuts: <kbd>Ctrl+Z</kbd> Undo, <kbd>Ctrl+Y</kbd> Redo, <kbd>Delete</kbd> Remove</span>
+            <span className="d-none d-md-inline">•</span>
+            <span className="d-none d-md-inline">Shortcuts: <kbd>Ctrl+Z</kbd> Undo, <kbd>Ctrl+Y</kbd> Redo, <kbd>Delete</kbd> Remove</span>
+            <span className="d-inline d-md-none text-primary">• Swipe horizontally to view full canvas</span>
           </div>
         </div>
       </div>

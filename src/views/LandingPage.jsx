@@ -17,14 +17,14 @@ import {
 } from 'lucide-react';
 import { LandingNavbar } from '../components/layout/LandingNavbar';
 import { AuthModal } from '../components/auth/AuthModal';
-import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import certgenBanner from '../assets/certgen_banner.jpg';
 
 export const LandingPage = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [contactSubmitted, setContactSubmitted] = useState(false);
-  const { user } = useApp();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleOpenAuth = (mode) => {

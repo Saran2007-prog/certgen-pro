@@ -354,3 +354,114 @@ body {
   border: 3px solid var(--cyber-green);
   color: #0f172a;
 }
+
+/* ========================================================
+   COMPREHENSIVE MOBILE & TABLET RESPONSIVENESS (PHONES / TABLETS)
+   ======================================================== */
+
+/* Fluid max-width wrappers */
+.max-w-6xl {
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.max-w-7xl {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive Table Scroll Container */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive Fabric.js Canvas Viewport */
+.canvas-viewport-card {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: #ffffff;
+}
+
+.canvas-viewport-wrapper {
+  transform-origin: top center;
+  transition: none !important;
+}
+
+/* Small Screens (Mobile Phones <= 768px) */
+@media (max-width: 768px) {
+  /* Navigation Bar compact layout */
+  .pro-nav .container-fluid {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pro-nav .btn {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Wizard Step Progress bar compact representation */
+  .wizard-step-node {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+  }
+
+  /* Split landing page collapses to vertical stack */
+  #right-scroll-container,
+  .col-12.col-lg-5.col-xl-5 {
+    height: auto !important;
+    position: static !important;
+    overflow-y: visible !important;
+  }
+
+  /* Certificate Canvas Display scales nicely on phone screens */
+  #certificate-print-area {
+    padding: 1.5rem !important;
+    border-width: 6px !important;
+    font-size: 13px;
+  }
+
+  #certificate-print-area h1.display-5 {
+    font-size: 1.6rem !important;
+  }
+
+  #certificate-print-area h2 {
+    font-size: 1.1rem !important;
+  }
+
+  /* Full-width Form Inputs and Buttons on small devices */
+  .btn-responsive-block {
+    width: 100% !important;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Extra Small Phones (<= 480px) */
+@media (max-width: 480px) {
+  .pro-nav .avatar {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 11px !important;
+  }
+
+  .card {
+    padding: 1rem !important;
+  }
+
+  .display-4 {
+    font-size: 1.85rem !important;
+  }
+}
+

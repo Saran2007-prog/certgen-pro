@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, ArrowRight, ShieldCheck } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   const [mode, setMode] = useState(initialMode);
-  const [email, setEmail] = useState('saranstalin@certgen.io');
-  const [password, setPassword] = useState('admin1234');
-  const [fullName, setFullName] = useState('Saranstalin S.');
-  const [organization, setOrganization] = useState('Global Institute of Technology');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [organization, setOrganization] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [authError, setAuthError] = useState('');
 
-  const { login } = useApp();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
 
   if (!isOpen) return null;
@@ -40,11 +40,22 @@ export const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
 
     setIsSubmitting(true);
     try {
-      await login(email, password);
+      if (mode === 'signup') {
+        // Direct MongoDB user creation via backend /api/auth/register
+        await register({
+          name: fullName.trim(),
+          email: email.trim().toLowerCase(),
+          password,
+          role: 'Administrator',
+        });
+      } else {
+        // Direct MongoDB verification via backend /api/auth/login
+        await login(email.trim().toLowerCase(), password);
+      }
       onClose();
       navigate('/dashboard');
     } catch (err) {
-      setAuthError(err.message || "Authentication failed.");
+      setAuthError(err.message || 'Authentication failed. Please verify your details.');
     } finally {
       setIsSubmitting(false);
     }

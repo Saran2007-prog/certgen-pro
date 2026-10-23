@@ -7,7 +7,8 @@ export const AppProvider = ({ children }) => {
   // Authentication State
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('certgen_user');
-    return saved ? JSON.parse(saved) : { email: 'saranstalin@certgen.io', role: 'Event Organizer', name: 'Saranstalin S.' };
+    const token = localStorage.getItem('certgen_token');
+    return (saved && token) ? JSON.parse(saved) : null;
   });
 
   // Events & Batches State
@@ -48,6 +49,40 @@ export const AppProvider = ({ children }) => {
       generatedCertificates: []
     };
   });
+
+  // Sync events from backend MongoDB on initial mount, falling back to cached state
+  useEffect(() => {
+    let isMounted = true;
+    const fetchBackendEvents = async () => {
+      try {
+        const { getEvents } = await import('../services/api');
+        const res = await getEvents();
+        if (isMounted && res && res.data && Array.isArray(res.data) && res.data.length > 0) {
+          const formatted = res.data.map(e => ({
+            id: e._id,
+            title: e.title,
+            date: e.date ? new Date(e.date).toISOString().split('T')[0] : '2026-10-23',
+            organization: e.organization,
+            category: e.category || 'Certificate of Excellence',
+            signatory: e.signatory || 'Authorized Officer',
+            totalRecords: e.totalRecords || 0,
+            status: 'Completed',
+            batchId: `BATCH-${e._id.slice(-6).toUpperCase()}`,
+            createdAt: e.createdAt ? new Date(e.createdAt).toISOString().replace('T', ' ').slice(0, 16) : 'Recently',
+          }));
+          setEvents(formatted);
+          localStorage.setItem('certgen_events', JSON.stringify(formatted));
+        }
+      } catch (err) {
+        // Backend offline or token not yet ready, use cached/initial events
+        console.info('[Notice] Using cached event history:', err.message);
+      }
+    };
+    fetchBackendEvents();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Sync to localStorage
   useEffect(() => {

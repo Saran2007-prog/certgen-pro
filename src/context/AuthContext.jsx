@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   /**
-   * Logs in using live backend /api/auth/login with mock fallback for seamless testing
+   * Logs in directly using live backend /api/auth/login to authenticate against MongoDB
    */
   const login = async (email, password) => {
     setLoading(true);
@@ -38,21 +38,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       return data.user;
     } catch (err) {
-      // Fallback for offline or demo credentials if backend has no seeded user yet
-      if (email && password && password.length >= 6) {
-        const fallbackUser = {
-          id: 'demo-user-1',
-          name: email.split('@')[0].toUpperCase(),
-          email,
-          role: 'Administrator',
-        };
-        const fallbackToken = 'demo-jwt-token-active';
-        setToken(fallbackToken);
-        setUser(fallbackUser);
-        localStorage.setItem('certgen_token', fallbackToken);
-        localStorage.setItem('certgen_user', JSON.stringify(fallbackUser));
-        return fallbackUser;
-      }
+      console.error('[MongoDB Auth Error]:', err.message);
       throw err;
     } finally {
       setLoading(false);

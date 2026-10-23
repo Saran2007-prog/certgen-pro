@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, UserPlus, LayoutDashboard, LogOut } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 export const LandingNavbar = ({ onOpenAuth }) => {
-  const { user, logout } = useApp();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const scrollToSection = (id) => {
@@ -55,25 +55,26 @@ export const LandingNavbar = ({ onOpenAuth }) => {
             <div className="d-flex align-items-center gap-2">
               <Link to="/dashboard" className="btn btn-sm btn-pro-primary px-3 py-1.5 d-flex align-items-center gap-1.5">
                 <LayoutDashboard size={14} />
-                <span>Console</span>
+                <span>Dashboard</span>
               </Link>
               <button
                 onClick={logout}
-                className="btn btn-sm btn-pro-outline p-1.5"
+                className="btn btn-sm btn-outline-danger p-1.5 d-flex align-items-center gap-1 px-2.5 rounded-2"
                 title="Log out"
               >
                 <LogOut size={14} />
+                <span className="small">Logout</span>
               </button>
             </div>
           ) : (
             <div className="d-flex align-items-center gap-2">
-              <button
-                onClick={() => onOpenAuth('login')}
+              <Link
+                to="/login"
                 className="btn btn-sm btn-pro-outline px-3.5 py-1.5 d-flex align-items-center gap-1.5"
               >
                 <LogIn size={14} />
                 <span>Log In</span>
-              </button>
+              </Link>
 
               <button
                 onClick={() => onOpenAuth('signup')}

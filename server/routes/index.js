@@ -150,6 +150,7 @@ router.post('/events', authMiddleware, async (req, res) => {
     });
 
     const savedEvent = await newEvent.save();
+    console.log(`[MongoDB Insert]: Successfully created Event -> ID: ${savedEvent._id}, Title: "${savedEvent.title}"`);
 
     return res.status(201).json({
       success: true,
@@ -225,6 +226,7 @@ router.post('/templates', authMiddleware, async (req, res) => {
     });
 
     const savedTemplate = await newTemplate.save();
+    console.log(`[MongoDB Insert]: Successfully saved Template -> ID: ${savedTemplate._id}, Name: "${savedTemplate.name}"`);
 
     return res.status(201).json({
       success: true,
@@ -480,6 +482,10 @@ router.post('/events/:eventId/generate', async (req, res) => {
         autoFirstPage: true,
       });
 
+      // Collect PDF chunks in memory to save directly to MongoDB (Zero disk writes)
+      const pdfChunks = [];
+      doc.on('data', (chunk) => pdfChunks.push(chunk));
+
       // Stream the PDF document directly into the ZIP archive
       const safeFilename = sanitizeFilename(participantName);
       archive.append(doc, {
@@ -584,10 +590,16 @@ router.post('/events/:eventId/generate', async (req, res) => {
         });
       }
 
-      // Finalize current participant's PDF document
-      doc.end();
+      // Finalize current participant's PDF document and collect in memory
+      await new Promise((resolve) => {
+        doc.on('end', resolve);
+        doc.end();
+      });
 
-      // Persist certificate details in MongoDB
+      const pdfBuffer = Buffer.concat(pdfChunks);
+      const pdfBase64 = pdfBuffer.toString('base64');
+
+      // Persist certificate details and raw PDF payload directly in MongoDB (Zero local disk reliance)
       await Certificate.create({
         eventId: event._id,
         participantName,
@@ -596,6 +608,7 @@ router.post('/events/:eventId/generate', async (req, res) => {
         issueDate: new Date(),
         status: 'generated',
         metadata: participant.data || {},
+        pdfBase64,
       });
     }
 

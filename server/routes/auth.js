@@ -50,6 +50,7 @@ router.post('/register', async (req, res) => {
     });
 
     const savedUser = await newUser.save();
+    console.log(`[MongoDB Insert]: Successfully registered and saved new user -> ID: ${savedUser._id}, Email: ${savedUser.email}`);
     const token = generateToken(savedUser);
 
     return res.status(201).json({
@@ -108,6 +109,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = generateToken(user);
+    console.log(`[MongoDB Auth]: User "${user.email}" authenticated successfully (ID: ${user._id})`);
 
     return res.status(200).json({
       success: true,

@@ -47,6 +47,10 @@ const certificateSchema = new mongoose.Schema(
       of: String,
       default: {},
     },
+    pdfBase64: {
+      type: String, // Base64 encoded PDF string stored directly in MongoDB
+      default: null,
+    },
   },
   {
     timestamps: true,
